@@ -1,0 +1,49 @@
+Caso 1 (Retail):
+1. coincide con lo que viste a mano?
+	R/ SI coincide con lo datos que visualice a mano
+2. cuantos registros perderemos si borramos nulos?
+	R/ solo 2 nulos 
+3. si sale 5 y deberían ser 3, hay inconsistencia
+	R/ me salen 6 por que se repite mal escrita las 3
+4. cuantas ventas repetidas?
+	R/ solo 2 
+
+Caso 2 (Fogon):
+1. coincide con lo que viste a mano?
+	R/ SI coincide con lo datos que visualice a mano
+2. cuantos registros perderemos si borramos nulos?
+	R/ solo 2 nulos
+3. si sale y deberían ser, hay inconsistencia
+	R/ me salen 4 (en Depto) porque se repite mal escrita cuando deberían ser 2 (Salon, Terraza)
+4. cuantas ventas repetidas?
+	R/ solo 2
+
+Caso 3 (Cimiento):
+1. coincide con lo que viste a mano?
+	R/ SI coincide con lo datos que visualice a mano
+2. cuantos registros perderemos si borramos nulos?
+	R/ solo 3 nulos
+3. si sale y deberían ser, hay inconsistencia
+	R/ me salen 4 o 5 (en Depto) porque se repite mal escrita cuando deberían ser 2 reales (Bodega A, Bodega B)
+4. cuantas ventas repetidas?
+	R/ 0 ventas repetidas
+
+Caso 4 (Estudio):
+1. coincide con lo que viste a mano?
+	R/ SI coincide con lo datos que visualice a mano
+2. cuantos registros perderemos si borramos nulos?
+	R/ solo 2 nulos
+3. si sale y deberían ser, hay inconsistencia
+	R/ me salen 5 (en Depto) porque se repite mal escrita cuando deberían ser 2 reales (Informatica, Gastronomia)
+4. cuantas ventas repetidas?
+	R/ solo 1 venta repetida
+
+Caso 5 (Salud Total):
+1. coincide con lo que viste a mano?
+	R/ SI coincide con lo datos que visualice a mano
+2. cuantos registros perderemos si borramos nulos?
+	R/ solo 1 nulo
+3. si sale y deberían ser, hay inconsistencia
+	R/ me salen 7 (en Depto) porque se repite mal escrita cuando deberían ser 4 (Dental, Kinesiologia, Pediatria, etc)
+4. cuantas ventas repetidas?
+	R/ 0 ventas repetidas

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpieza vs Integración de Datos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .code-font { font-family: 'Fira Code', monospace; }
+        .tab-active-cleaning { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        .tab-active-integration { background-color: #10b981; color: white; border-color: #10b981; }
+        .tab-active-compare { background-color: #1e293b; color: white; border-color: #1e293b; }
+        .row-cleaned { background-color: #dcfce7; transition: all 0.5s ease; }
+        .pulse-once { animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="bg-slate-900 p-3 rounded-xl text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Gestión de Datos</h1>
+                        <p class="text-slate-500 font-medium">Calidad vs. Consolidación</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider border border-blue-200">Limpieza</span>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider border border-emerald-200">Integración</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navegación -->
+        <nav class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <button onclick="switchMode('cleaning')" id="btn-cleaning" class="nav-btn flex items-center justify-center gap-3 p-4 rounded-xl transition-all bg-white border border-slate-200 font-semibold hover:border-blue-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                1. Limpieza
+            </button>
+            <button onclick="switchMode('integration')" id="btn-integration" class="nav-btn flex items-center justify-center gap-3 p-4 rounded-xl transition-all bg-white border border-slate-200 font-semibold hover:border-emerald-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                2. Integración
+            </button>
+            <button onclick="switchMode('compare')" id="btn-compare" class="nav-btn flex items-center justify-center gap-3 p-4 rounded-xl transition-all bg-white border border-slate-200 font-semibold hover:border-slate-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                Comparativa
+            </button>
+        </nav>
+
+        <!-- Contenido Dinámico -->
+        <div id="main-content" class="bg-white rounded-2xl shadow-sm border border-slate-200 min-h-[550px] overflow-hidden">
+            <!-- Cargado por JS -->
+        </div>
+
+        <!-- Simulador Global -->
+        <section class="bg-slate-900 rounded-3xl p-8 text-white shadow-2xl">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="bg-white/10 p-2 rounded-lg">🚀</span>
+                Simulador Global de Datos
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <!-- Origen -->
+                <div id="sim-step-1" class="space-y-4">
+                    <div class="text-xs uppercase tracking-widest text-slate-400 font-bold">Paso 1: Silos de Origen</div>
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+                        <div class="text-[10px] bg-blue-900/50 text-blue-300 p-1 px-2 rounded inline-block">CRM</div>
+                        <div class="text-xs font-mono text-slate-300 mt-2">ID: 101, Nom: 'diego v.'</div>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+                        <div class="text-[10px] bg-emerald-900/50 text-emerald-300 p-1 px-2 rounded inline-block">ERP</div>
+                        <div class="text-xs font-mono text-slate-300 mt-2">ID: 101, Pago: NaN</div>
+                    </div>
+                </div>
+
+                <!-- Acción -->
+                <div class="flex flex-col items-center gap-2">
+                    <div id="action-label" class="text-sm font-bold text-blue-400 bg-blue-400/10 px-4 py-1 rounded-full border border-blue-400/20">Procesamiento</div>
+                    <div class="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="bg-blue-500 h-full w-0 transition-all duration-1000"></div>
+                    </div>
+                    <div class="flex gap-2 w-full mt-4">
+                        <button onclick="runSimulation()" id="run-btn" class="flex-1 bg-white text-slate-900 px-4 py-3 rounded-xl font-bold hover:scale-105 transition-all shadow-lg disabled:opacity-50">
+                            Iniciar Flujo
+                        </button>
+                        <button onclick="resetSimulation()" class="bg-slate-700 text-white p-3 rounded-xl hover:bg-slate-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Warehouse -->
+                <div id="sim-step-final" class="opacity-20 blur-[1px] transition-all duration-700">
+                    <div class="text-xs uppercase tracking-widest text-slate-400 font-bold mb-4">Paso 2: Vista Unificada</div>
+                    <div class="bg-emerald-900/30 border border-emerald-500/30 p-6 rounded-2xl">
+                        <div class="text-sm font-bold text-emerald-400 mb-2 underline">Data Warehouse</div>
+                        <div class="text-xs font-mono text-white">
+                            ✓ ID: 101<br>
+                            ✓ Nombre: Diego Vergara<br>
+                            ✓ Estado: Curado
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let currentMode = 'cleaning';
+        let cleanRowState = { nombre: 'diego v.', monto: 'NaN' };
+        let integrationState = { showJoin: false };
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const content = document.getElementById('main-content');
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(b => b.classList.remove('tab-active-cleaning', 'tab-active-integration', 'tab-active-compare'));
+            document.getElementById(`btn-${mode}`).classList.add(`tab-active-${mode === 'compare' ? 'compare' : mode}`);
+            
+            if (mode === 'cleaning') {
+                renderCleaning(content);
+            } else if (mode === 'integration') {
+                renderIntegration(content);
+            } else {
+                renderCompare(content);
+            }
+        }
+
+        // --- RENDERIZADO DE LIMPIEZA ---
+        function renderCleaning(container) {
+            container.innerHTML = `
+                <div class="p-8 animate-in fade-in duration-500">
+                    <div class="flex flex-col md:flex-row gap-6 mb-8">
+                        <div class="md:w-2/3">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-4">1. Pilar de la Limpieza</h2>
+                            <p class="text-slate-600 leading-relaxed">
+                                Este pilar representa la <strong>Higiene de Datos</strong>. Su función es asegurar que cada registro sea preciso, consistente y libre de ruido. Un dato "sucio" (duplicado, mal escrito o incompleto) puede arruinar cualquier análisis estadístico posterior, por lo que la limpieza es la base de la confianza en los resultados.
+                            </p>
+                        </div>
+                        <div class="md:w-1/3 bg-blue-50 p-4 rounded-xl border border-blue-100 self-center">
+                            <p class="text-xs text-blue-800 font-semibold italic">"Sin limpieza, los datos son solo ruido."</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Mini Lab de Limpieza -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <h3 class="text-sm font-bold text-slate-400 uppercase mb-4 tracking-widest">Mini-Laboratorio</h3>
+                            <div class="space-y-4">
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="grid grid-cols-2 text-[10px] text-slate-400 font-bold mb-2 uppercase">
+                                        <span>Col: Nombre</span>
+                                        <span>Col: Monto</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 font-mono text-sm">
+                                        <span id="clean-name" class="p-1 rounded transition-colors ${cleanRowState.nombre === 'Diego V.' ? 'text-emerald-600 bg-emerald-50 font-bold' : 'text-slate-600'}">${cleanRowState.nombre}</span>
+                                        <span id="clean-monto" class="p-1 rounded transition-colors ${cleanRowState.monto === '500.00' ? 'text-emerald-600 bg-emerald-50 font-bold' : 'text-slate-600'}">${cleanRowState.monto}</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="miniClean('name')" class="text-[10px] bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition-colors">Normalizar Nombre</button>
+                                    <button onclick="miniClean('monto')" class="text-[10px] bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition-colors">Rellenar Nulos (Mean)</button>
+                                </div>
+                                <button onclick="resetMiniClean()" class="w-full text-[10px] text-blue-400 hover:underline">Reiniciar Lab</button>
+                            </div>
+                        </div>
+
+                        <!-- Info de Limpieza -->
+                        <div class="space-y-4">
+                            <div class="bg-slate-900 p-5 rounded-2xl text-blue-300 font-mono text-xs shadow-xl">
+                                <span class="text-slate-500"># En Pandas:</span><br>
+                                df['nom'] = df['nom'].str.title()<br>
+                                df['mto'] = df['mto'].fillna(df['mto'].mean())
+                            </div>
+                            <ul class="text-sm text-slate-600 space-y-1">
+                                <li class="flex items-center gap-2">✓ Elimina Outliers</li>
+                                <li class="flex items-center gap-2">✓ Resuelve Duplicados</li>
+                                <li class="flex items-center gap-2">✓ Formatea Tipos de Datos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- RENDERIZADO DE INTEGRACIÓN ---
+        function renderIntegration(container) {
+            container.innerHTML = `
+                <div class="p-8 animate-in fade-in duration-500">
+                    <div class="flex flex-col md:flex-row gap-6 mb-8">
+                        <div class="md:w-2/3">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-4">2. Pilar de la Integración</h2>
+                            <p class="text-slate-600 leading-relaxed">
+                                Este pilar se refiere a la <strong>Consolidación de Fuentes</strong>. Su propósito es romper los "silos de información" uniendo datos que residen en diferentes lugares (como un archivo Excel y una base de datos SQL). Permite obtener una vista unificada (Single Truth) que conecta, por ejemplo, los pagos con el perfil del cliente.
+                            </p>
+                        </div>
+                        <div class="md:w-1/3 bg-emerald-50 p-4 rounded-xl border border-emerald-100 self-center">
+                            <p class="text-xs text-emerald-800 font-semibold italic">"Integrar es conectar silos para ver el panorama completo."</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Info de Integración -->
+                        <div class="space-y-4">
+                            <div class="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl">
+                                <h3 class="font-bold text-emerald-800 text-sm mb-2">Técnica: INNER JOIN</h3>
+                                <p class="text-xs text-emerald-700">Combina registros de dos tablas basándose en una clave común (ID).</p>
+                            </div>
+                            <div class="bg-slate-900 p-5 rounded-2xl text-emerald-300 font-mono text-xs shadow-xl">
+                                <span class="text-slate-500">-- En SQL:</span><br>
+                                SELECT * FROM Ventas v<br>
+                                JOIN Clientes c ON v.id = c.id
+                            </div>
+                        </div>
+
+                        <!-- Mini Lab de Integración -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 relative shadow-sm">
+                            <h3 class="text-sm font-bold text-slate-400 uppercase mb-4 tracking-widest text-center">Simulador de JOIN</h3>
+                            <div class="flex items-center justify-between gap-2 mb-4">
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-[10px] flex-1 text-center">
+                                    <div class="text-slate-400 font-bold mb-1 italic">Ventas</div>
+                                    <div class="font-bold text-slate-700">ID: 101 | $500</div>
+                                </div>
+                                <div class="text-emerald-500 font-black">↔</div>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-[10px] flex-1 text-center">
+                                    <div class="text-slate-400 font-bold mb-1 italic">Clientes</div>
+                                    <div class="font-bold text-slate-700">ID: 101 | Diego</div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="miniJoin()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-all active:scale-95 shadow-lg">
+                                Ejecutar Unificación
+                            </button>
+
+                            <div id="join-result" class="mt-6 transition-all duration-500 transform ${integrationState.showJoin ? 'scale-100 opacity-100' : 'scale-75 opacity-0 h-0 overflow-hidden'}">
+                                <div class="bg-emerald-600 text-white p-4 rounded-xl text-[11px] font-mono text-center shadow-lg border-2 border-white/20">
+                                    <div class="uppercase text-[9px] text-emerald-200 mb-1 tracking-widest">Resultado Unificado</div>
+                                    { ID: 101, Nom: 'Diego', Total: $500 }
+                                </div>
+                                <button onclick="resetMiniJoin()" class="w-full text-[10px] text-emerald-500 mt-2 hover:underline">Ocultar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCompare(container) {
+            container.innerHTML = `
+                <div class="p-8 animate-in fade-in zoom-in-95 duration-300">
+                    <h2 class="text-2xl font-bold text-center text-slate-900 mb-8">Comparativa Directa</h2>
+                    <table class="w-full text-left border-separate border-spacing-y-3">
+                        <thead>
+                            <tr class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                                <th class="px-6 py-2">Atributo</th>
+                                <th class="px-6 py-2">Limpieza</th>
+                                <th class="px-6 py-2">Integración</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border border-slate-100 shadow-sm rounded-xl">
+                                <td class="px-6 py-5 font-bold text-slate-700 border-l-4 border-blue-500 rounded-l-xl">Objetivo</td>
+                                <td class="px-6 py-5 text-sm">Corregir contenido interno</td>
+                                <td class="px-6 py-5 text-sm border-r-4 border-emerald-500 rounded-r-xl font-medium">Unir fuentes externas</td>
+                            </tr>
+                            <tr class="bg-white border border-slate-100 shadow-sm rounded-xl">
+                                <td class="px-6 py-5 font-bold text-slate-700 border-l-4 border-blue-500 rounded-l-xl">Resultado</td>
+                                <td class="px-6 py-5 text-sm">Datos "Sanos" (Curados)</td>
+                                <td class="px-6 py-5 text-sm border-r-4 border-emerald-500 rounded-r-xl font-medium">Vista Unificada (360)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // --- LÓGICA MINI SIMULADORES ---
+        function miniClean(type) {
+            if (type === 'name') cleanRowState.nombre = 'Diego V.';
+            if (type === 'monto') cleanRowState.monto = '500.00';
+            renderCleaning(document.getElementById('main-content'));
+        }
+
+        function resetMiniClean() {
+            cleanRowState = { nombre: 'diego v.', monto: 'NaN' };
+            renderCleaning(document.getElementById('main-content'));
+        }
+
+        function miniJoin() {
+            integrationState.showJoin = true;
+            renderIntegration(document.getElementById('main-content'));
+        }
+
+        function resetMiniJoin() {
+            integrationState.showJoin = false;
+            renderIntegration(document.getElementById('main-content'));
+        }
+
+        // --- LÓGICA SIMULADOR GLOBAL ---
+        function runSimulation() {
+            const bar = document.getElementById('progress-bar');
+            const label = document.getElementById('action-label');
+            const btn = document.getElementById('run-btn');
+            const final = document.getElementById('sim-step-final');
+            
+            btn.disabled = true;
+            btn.innerText = "Limpiando...";
+            bar.style.width = '50%';
+            label.innerText = 'Cleaning...';
+
+            setTimeout(() => {
+                label.innerText = 'Integration...';
+                label.className = 'text-sm font-bold text-emerald-400 bg-emerald-400/10 px-4 py-1 rounded-full border border-emerald-400/20';
+                bar.classList.replace('bg-blue-500', 'bg-emerald-500');
+                bar.style.width = '100%';
+                btn.innerText = "Integrando...";
+
+                setTimeout(() => {
+                    final.classList.remove('opacity-20', 'blur-[1px]');
+                    final.classList.add('scale-105');
+                    btn.innerText = "¡Hecho!";
+                }, 1000);
+            }, 1000);
+        }
+
+        function resetSimulation() {
+            const bar = document.getElementById('progress-bar');
+            const label = document.getElementById('action-label');
+            const btn = document.getElementById('run-btn');
+            const final = document.getElementById('sim-step-final');
+
+            bar.style.width = '0%';
+            bar.classList.replace('bg-emerald-500', 'bg-blue-500');
+            label.innerText = 'Procesamiento';
+            label.className = 'text-sm font-bold text-blue-400 bg-blue-400/10 px-4 py-1 rounded-full border border-blue-400/20';
+            btn.disabled = false;
+            btn.innerText = "Iniciar Flujo";
+            final.classList.add('opacity-20', 'blur-[1px]');
+            final.classList.remove('scale-105');
+        }
+
+        window.onload = () => switchMode('cleaning');
+    </script>
+</body>
+</html>

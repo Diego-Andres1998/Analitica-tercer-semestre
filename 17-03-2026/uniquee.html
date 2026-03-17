@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Datos con Pandas: .unique()</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { background-color: #2563eb; color: white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- Encabezado -->
+        <header class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-900">Pandas Lab: Comandos Esenciales</h1>
+            </div>
+            <p class="text-slate-600">
+                Guía interactiva sobre el uso de <b>df['Columna'].unique()</b> y limpieza de datos.
+            </p>
+        </header>
+
+        <!-- Navegación de Comandos -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button onclick="switchTab('raw')" id="btn-raw" class="tab-btn flex items-center justify-center gap-2 p-3 rounded-xl transition-all bg-white text-slate-600 border border-slate-200 hover:bg-slate-50">
+                Datos Base
+            </button>
+            <button onclick="switchTab('unique')" id="btn-unique" class="tab-btn flex items-center justify-center gap-2 p-3 rounded-xl transition-all bg-white text-slate-600 border border-slate-200 hover:bg-slate-50">
+                .unique()
+            </button>
+            <button onclick="switchTab('nunique')" id="btn-nunique" class="tab-btn flex items-center justify-center gap-2 p-3 rounded-xl transition-all bg-white text-slate-600 border border-slate-200 hover:bg-slate-50">
+                .nunique()
+            </button>
+            <button onclick="switchTab('counts')" id="btn-counts" class="tab-btn flex items-center justify-center gap-2 p-3 rounded-xl transition-all bg-white text-slate-600 border border-slate-200 hover:bg-slate-50">
+                .value_counts()
+            </button>
+        </div>
+
+        <!-- Área de Resultados -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden min-h-[350px]">
+            <div id="display-area" class="p-0">
+                <!-- El contenido se genera con JS -->
+            </div>
+        </div>
+
+        <!-- Panel de Control de Limpieza -->
+        <div class="bg-blue-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h3 class="font-bold text-lg">Simulador de Limpieza</h3>
+                <p class="text-blue-200 text-sm">Aplica transformaciones de Pandas en tiempo real.</p>
+            </div>
+            <button onclick="toggleClean()" id="clean-btn" class="bg-white text-blue-900 px-6 py-2 rounded-full font-bold hover:bg-blue-50 transition-colors">
+                Limpiar Datos (str.title)
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const rawData = [
+            { id: 1, nombre: 'Ana García', depto: 'Ventas' },
+            { id: 2, nombre: 'Luis Pérez', depto: 'Sistemas' },
+            { id: 3, nombre: 'Marta Ruiz', depto: 'ventas' },
+            { id: 4, nombre: 'Juan López', depto: 'RRHH' },
+            { id: 5, nombre: 'Elena Sanz', depto: 'Sistemas' },
+            { id: 6, nombre: 'Pedro Gómez', depto: 'Ventas' }
+        ];
+
+        let currentData = JSON.parse(JSON.stringify(rawData));
+        let isClean = false;
+        let currentTab = 'raw';
+
+        function render() {
+            const area = document.getElementById('display-area');
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(`btn-${currentTab}`).classList.add('tab-active');
+
+            if (currentTab === 'raw') {
+                let html = `<table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100"><tr><th class="px-6 py-4">ID</th><th class="px-6 py-4">Nombre</th><th class="px-6 py-4">Depto</th></tr></thead><tbody class="divide-y divide-slate-100">`;
+                currentData.forEach(row => {
+                    html += `<tr><td class="px-6 py-3 text-slate-400">${row.id}</td><td class="px-6 py-3 font-medium">${row.nombre}</td><td class="px-6 py-3"><span class="px-2 py-1 bg-slate-100 rounded text-xs">${row.depto}</span></td></tr>`;
+                });
+                html += `</tbody></table>`;
+                area.innerHTML = html;
+            } 
+            
+            else if (currentTab === 'unique') {
+                const uniqueVals = [...new Set(currentData.map(d => d.depto))];
+                let html = `<div class="p-8"><div class="bg-slate-900 text-blue-400 p-4 rounded-xl font-mono text-sm mb-6">df['Depto'].unique()<br><span class="text-slate-500"># Salida:</span><br>array([${uniqueVals.map(v => `'${v}'`).join(', ')}])</div><div class="grid grid-cols-2 gap-4">`;
+                uniqueVals.forEach(v => {
+                    html += `<div class="bg-blue-50 border border-blue-100 p-4 rounded-xl text-center font-bold text-blue-700">${v}</div>`;
+                });
+                html += `</div>`;
+                if (!isClean) html += `<p class="mt-6 text-amber-600 text-sm">⚠️ Nota cómo 'Ventas' y 'ventas' aparecen por separado.</p>`;
+                html += `</div>`;
+                area.innerHTML = html;
+            }
+
+            else if (currentTab === 'nunique') {
+                const count = [...new Set(currentData.map(d => d.depto))].length;
+                area.innerHTML = `<div class="p-8 text-center flex flex-col items-center justify-center h-full"><div class="text-7xl font-black text-indigo-600 mb-4">${count}</div><div class="text-slate-500 font-mono">df['Depto'].nunique()</div></div>`;
+            }
+
+            else if (currentTab === 'counts') {
+                const counts = {};
+                currentData.forEach(d => counts[d.depto] = (counts[d.depto] || 0) + 1);
+                let html = `<div class="p-8 space-y-4">`;
+                Object.entries(counts).forEach(([k, v]) => {
+                    const perc = (v / currentData.length) * 100;
+                    html += `<div><div class="flex justify-between text-sm mb-1"><b>${k}</b><span>${v}</span></div><div class="w-full bg-slate-100 h-2 rounded-full"><div class="bg-emerald-500 h-2 rounded-full" style="width:${perc}%"></div></div></div>`;
+                });
+                html += `</div>`;
+                area.innerHTML = html;
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            render();
+        }
+
+        function toggleClean() {
+            isClean = !isClean;
+            if (isClean) {
+                currentData = currentData.map(d => ({ ...d, depto: d.depto.charAt(0).toUpperCase() + d.depto.slice(1).toLowerCase() }));
+                document.getElementById('clean-btn').innerText = "Restablecer Errores";
+            } else {
+                currentData = JSON.parse(JSON.stringify(rawData));
+                document.getElementById('clean-btn').innerText = "Limpiar Datos (str.title)";
+            }
+            render();
+        }
+
+        // Iniciar
+        window.onload = render;
+    </script>
+</body>
+</html>
