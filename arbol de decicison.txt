@@ -1,0 +1,44 @@
+
+El error ValueError: could not convert string to float: '40 min' ocurre porque los modelos de aprendizaje automático (como el DecisionTreeClassifier de scikit-learn) solo pueden trabajar con números. En tu caso, estás pasando una columna que contiene texto (probablemente la columna duration que tiene valores como "40 min" o "1 Season").
+
+Para solucionar esto, debes "limpiar" los datos para extraer solo el valor numérico antes de entrenar el modelo.
+
+Aquí tienes el código corregido para esa celda. Puedes copiarlo y pegarlo:
+
+python
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+import matplotlib.pyplot as plt
+# 1. Carga de datos
+df = pd.read_csv('netflix1.csv', sep=';')
+# 2. Preprocesamiento
+# Convertimos el objetivo 'type' a números: Movie = 0, TV Show = 1
+df['type_num'] = df['type'].map({'Movie': 0, 'TV Show': 1})
+# --- SOLUCIÓN AL ERROR ---
+# El error ocurre porque la columna 'duration' tiene texto ("min", "Season").
+# Vamos a extraer solo el número usando una expresión regular.
+df['duration_num'] = df['duration'].str.extract('(\d+)').astype(float)
+# Eliminamos filas que tengan valores nulos después de la conversión para evitar errores
+df = df.dropna(subset=['release_year', 'duration_num', 'type_num'])
+# 3. Definir variables
+# Ahora usamos 'duration_num' en lugar de la columna con texto
+X = df[['release_year', 'duration_num']] 
+y = df['type_num']
+# 4. Crear el modelo usando índice de Gini y una profundidad baja
+modelo = DecisionTreeClassifier(criterion='gini', max_depth=3)
+modelo.fit(X, y)
+# 5. Visualización del Árbol
+plt.figure(figsize=(12, 8))
+plot_tree(modelo, 
+          filled=True, 
+          feature_names=['Año', 'Duración'], 
+          class_names=['Movie', 'TV Show'],
+          fontsize=10)
+plt.title("Árbol de Decisión: Clasificación (Película vs Serie)")
+plt.show()
+¿Por qué fallaba?
+Datos no numéricos: modelo.fit(X, y) intenta convertir todo a números decimales (float). Cuando encuentra el texto '40 min', no sabe qué número asignarle y se detiene.
+Uso de str.extract('(\d+)'): Esta función busca los dígitos en una cadena de texto (ej. "40" de "40 min") y los convierte a un formato que el modelo sí entiende.
+Manejo de nulos: Al limpiar datos, a veces quedan espacios vacíos. df.dropna asegura que el modelo reciba datos completos.
+Nota: He aumentado un poco el max_depth a 3 para que el árbol pueda usar ambas características (Año y Duración) y así sea más preciso. finalizaste tu tarea.
+
