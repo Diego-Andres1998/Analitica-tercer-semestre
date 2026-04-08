@@ -1,0 +1,15 @@
+3. Preguntas de Reflexión
+¿Cuál es la ventaja de usar un ciclo for para filtrar departamentos en lugar de hacerlo manualmente?
+La escalabilidad y la eficiencia. Un ciclo for permite que el código funcione sin cambios si el dataset crece de 3 a 100 departamentos, evitando errores humanos y la repetición de código (principio DRY: Don't Repeat Yourself).
+
+¿Por qué es necesario normalizar el texto antes de generar un gráfico de barras?
+Para evitar la fragmentación de datos. Si tienes "Ventas", "ventas" y "VENTAS", Python los tratará como categorías distintas. Normalizar asegura que toda la información de un mismo grupo se sume correctamente.
+
+¿Cuál es la función de la variable departamentos = df['Depto'].dropna().unique()?
+Identificar todos los grupos únicos presentes en la columna, eliminando valores nulos (dropna) para asegurar que el ciclo for solo itere sobre categorías válidas y existentes.
+
+¿Qué sucedería si eliminamos la línea de filtrado filtro = df[df['Depto'] == depto]?
+El script calcularía las estadísticas sobre el DataFrame completo en cada iteración. Como resultado, verías los mismos totales generales repetidos bajo el nombre de cada departamento, perdiendo el análisis segmentado.
+
+¿La barra más alta en ingresos significa necesariamente más clientes?
+No. Un departamento puede tener pocos clientes que realizan compras de muy alto valor (ticket promedio alto), superando en ingresos a un departamento con muchos clientes que compran productos económicos.
